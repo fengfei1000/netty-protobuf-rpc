@@ -21,39 +21,65 @@
  */
 package com.googlecode.protobuf.netty;
 
-import java.net.SocketAddress;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelUpstreamHandler;
+import java.net.SocketAddress;
 
 public class NettyRpcClient {
 
-	private final ClientBootstrap bootstrap;
-
-	private final ChannelUpstreamHandlerFactory handlerFactory = new ChannelUpstreamHandlerFactory() {
-		public ChannelUpstreamHandler getChannelUpstreamHandler() {
-			return new NettyRpcClientChannelUpstreamHandler();
-		}
-	};
-	
-	private final ChannelPipelineFactory pipelineFactory = new NettyRpcPipelineFactory(
-			handlerFactory, 
+	private final Bootstrap bootstrap;
+	private EventLoopGroup group;
+	private final NettyRpcClientInitializer clientInitializer = new NettyRpcClientInitializer(
 			NettyRpcProto.RpcResponse.getDefaultInstance());
-	
-	public NettyRpcClient(ChannelFactory channelFactory) {
-		bootstrap = new ClientBootstrap(channelFactory);
-		bootstrap.setPipelineFactory(pipelineFactory);
+
+	public NettyRpcClient() {
+
+		this(new NioEventLoopGroup());
 	}
-	
-	public NettyRpcChannel blockingConnect(SocketAddress sa) {
-		return new NettyRpcChannel(
-				bootstrap.connect(sa).awaitUninterruptibly().getChannel());
+
+	public NettyRpcClient(EventLoopGroup group) {
+		this.group = group;
+		bootstrap = new Bootstrap();
+		bootstrap.group(group);
+		bootstrap.channel(NioSocketChannel.class);
+		bootstrap.handler(clientInitializer);
+
+		bootstrap.option(ChannelOption.TCP_NODELAY, true);
+		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+		bootstrap.option(ChannelOption.SO_SNDBUF, 1048576);
+		bootstrap.option(ChannelOption.SO_RCVBUF, 1048576);
 	}
-	
+
+	public NettyRpcChannel blockingConnect(SocketAddress address)
+			throws Exception {
+
+		// Make a new connection.
+		ChannelFuture f = bootstrap.connect(address).sync();
+		return new NettyRpcChannel(f.awaitUninterruptibly().channel());
+
+	}
+
+	public NettyRpcChannel blockingConnect(String host, int port)
+			throws Exception {
+
+		// Make a new connection.
+		ChannelFuture future = bootstrap.connect(host, port).sync();
+		// ChannelFuture future =bootstrap.connect(host,
+		// port).awaitUninterruptibly();
+
+		return new NettyRpcChannel(future.channel());
+
+	}
+
 	public void shutdown() {
-		bootstrap.releaseExternalResources();
+
+		bootstrap.shutdown();
+		group.shutdown();
 	}
-	
+
 }
