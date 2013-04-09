@@ -21,24 +21,20 @@
  */
 package com.googlecode.protobuf.netty;
 
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import com.googlecode.protobuf.netty.NettyRpcChannel.ResponsePrototypeRpcCallback;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcResponse;
 
-@Sharable
 public class NettyRpcClientChannelUpstreamHandler extends
-		SimpleChannelUpstreamHandler {
+		ChannelInboundMessageHandlerAdapter<RpcResponse> {
 
 	private static final Logger logger = Logger
 			.getLogger(NettyRpcClientChannelUpstreamHandler.class);
@@ -60,15 +56,22 @@ public class NettyRpcClientChannelUpstreamHandler extends
 	}
 
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		super.channelActive(ctx);
 		logger.info("Channel connected");
 	}
 
+	// @Override
+	// public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent
+	// e) {
+	//
+	// }
+
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+	public void messageReceived(ChannelHandlerContext ctx, RpcResponse response)
 			throws Exception {
 
-		RpcResponse response = (RpcResponse) e.getMessage();
+		// RpcResponse response = (RpcResponse) e.getMessage();
 
 		if (!response.hasId()) {
 			logger.debug("Should never receive response without seqId");
@@ -93,11 +96,12 @@ public class NettyRpcClientChannelUpstreamHandler extends
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 			throws Exception {
-		logger.error("Unhandled exception in handler", e.getCause());
-		e.getChannel().close();
-		throw new Exception(e.getCause());
+		logger.error("Unhandled exception in handler", cause);
+		ctx.channel().close();
+		// ctx.close();
+		throw new Exception(cause);
 	}
 
 }
