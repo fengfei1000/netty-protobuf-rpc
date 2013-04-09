@@ -28,12 +28,12 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import com.google.protobuf.BlockingService;
 import com.google.protobuf.Service;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcRequest;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 public class NettyRpcServer {
 

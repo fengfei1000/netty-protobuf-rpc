@@ -23,6 +23,7 @@ package com.googlecode.protobuf.netty;
 
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 
+
 public interface ChannelUpstreamHandlerFactory {
 
 	public ChannelUpstreamHandler getChannelUpstreamHandler();

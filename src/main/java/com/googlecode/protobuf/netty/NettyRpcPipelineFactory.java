@@ -21,6 +21,7 @@
  */
 package com.googlecode.protobuf.netty;
 
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;

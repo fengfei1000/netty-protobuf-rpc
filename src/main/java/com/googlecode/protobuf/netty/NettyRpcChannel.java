@@ -21,17 +21,18 @@
  */
 package com.googlecode.protobuf.netty;
 
+
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 
 import com.google.protobuf.BlockingRpcChannel;
+import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcChannel;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
-import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcRequest;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcResponse;
 
