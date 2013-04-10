@@ -22,6 +22,7 @@
 package com.googlecode.protobuf.netty;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
@@ -43,13 +44,14 @@ import com.google.protobuf.ServiceException;
 import com.googlecode.protobuf.netty.NettyRpcProto.ErrorCode;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcRequest;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcResponse;
+import com.googlecode.protobuf.netty.client.NettyRpcController;
 import com.googlecode.protobuf.netty.exception.InvalidRpcRequestException;
 import com.googlecode.protobuf.netty.exception.NoRequestIdException;
 import com.googlecode.protobuf.netty.exception.NoSuchServiceException;
 import com.googlecode.protobuf.netty.exception.NoSuchServiceMethodException;
 import com.googlecode.protobuf.netty.exception.RpcException;
 import com.googlecode.protobuf.netty.exception.RpcServiceException;
-
+ @Sharable
 class NettyRpcServerChannelUpstreamHandler extends
 		ChannelInboundMessageHandlerAdapter<RpcRequest> {
 

@@ -19,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.googlecode.protobuf.netty;
+package com.googlecode.protobuf.netty.client;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 
@@ -30,9 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
-import com.googlecode.protobuf.netty.NettyRpcChannel.ResponsePrototypeRpcCallback;
 import com.googlecode.protobuf.netty.NettyRpcProto.RpcResponse;
-
+@Sharable
 public class NettyRpcClientChannelUpstreamHandler extends
 		ChannelInboundMessageHandlerAdapter<RpcResponse> {
 

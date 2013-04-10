@@ -13,21 +13,17 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.googlecode.protobuf.netty;
-
-import com.google.protobuf.Message;
-import com.googlecode.protobuf.netty.NettyRpcProto.RpcRequest;
-import com.googlecode.protobuf.netty.NettyRpcProto.RpcResponse;
+package com.googlecode.protobuf.netty.client;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.compression.ZlibCodecFactory;
-import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+
+import com.google.protobuf.Message;
 
 /**
  * Creates a newly configured {@link ChannelPipeline} for a client-side channel.
@@ -38,11 +34,12 @@ public class NettyRpcClientInitializer extends
 	// For more information see:
 	// http://stackoverflow.com/questions/8065022/how-to-use-unlimited-frame-sizes-in-jboss-netty-without-wasting-memory
 	private static final int MAX_FRAME_BYTES_LENGTH = Integer.MAX_VALUE;
-
+	private final NettyRpcClientChannelUpstreamHandler handler;
 	private final Message defaultInstance;
 
-	NettyRpcClientInitializer(Message defaultInstance) {
-
+	NettyRpcClientInitializer(NettyRpcClientChannelUpstreamHandler handler,
+			Message defaultInstance) {
+		this.handler = handler;
 		this.defaultInstance = defaultInstance;
 	}
 
@@ -57,6 +54,6 @@ public class NettyRpcClientInitializer extends
 		p.addLast("frameEncoder", new LengthFieldPrepender(4));
 		p.addLast("protobufEncoder", new ProtobufEncoder());
 
-		p.addLast("handler", new NettyRpcClientChannelUpstreamHandler());
+		p.addLast("handler", handler);
 	}
 }

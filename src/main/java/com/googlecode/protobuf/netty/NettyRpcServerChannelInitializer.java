@@ -9,7 +9,6 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 
 import com.google.protobuf.Message;
-import com.googlecode.protobuf.netty.NettyRpcProto.RpcRequest;
 
 public class NettyRpcServerChannelInitializer  extends
 		ChannelInitializer<SocketChannel> {

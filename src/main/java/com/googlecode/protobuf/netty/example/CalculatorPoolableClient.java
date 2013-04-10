@@ -21,42 +21,41 @@
  */
 package com.googlecode.protobuf.netty.example;
 
-import java.net.InetSocketAddress;
-
 import org.apache.log4j.BasicConfigurator;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
-import com.googlecode.protobuf.netty.client.NettyRpcChannel;
-import com.googlecode.protobuf.netty.client.NettyRpcClient;
+import com.googlecode.protobuf.netty.client.ChannelRouter;
+import com.googlecode.protobuf.netty.client.RpcClientChannel;
 import com.googlecode.protobuf.netty.example.Calculator.CalcRequest;
 import com.googlecode.protobuf.netty.example.Calculator.CalcResponse;
 import com.googlecode.protobuf.netty.example.Calculator.CalcService;
 import com.googlecode.protobuf.netty.example.Calculator.CalcService.BlockingInterface;
 import com.googlecode.protobuf.netty.example.Calculator.CalcService.Stub;
 
-public class CalculatorClient {
+public class CalculatorPoolableClient {
 
 	public static void main(String[] args) throws Exception {
 
 		BasicConfigurator.configure();
 
-		NettyRpcClient client = new NettyRpcClient();
-
-		for (int i = 0; i < 10; i++) {
-			NettyRpcChannel channel = client
-					.blockingConnect(new InetSocketAddress("localhost", 8080));
-			System.out.println(channel);
-			// test(channel, i);
-		}
+		ChannelRouter client = ChannelRouter.create("localhost:8080");
+		RpcClientChannel channel = client.newCLusterChannel();
+		System.out.println(channel);
+		test(channel, 0);
+		// for (int i = 0; i < 1; i++) {
+		// RpcClientChannel channel = client.newCLusterChannel();
+		// System.out.println(channel);
+		// test(channel, i);
+		// }
 		// Close the client
 		client.shutdown();
 
 		System.out.println("Done!");
 	}
 
-	private static void test(NettyRpcChannel channel, int i) throws Exception {
+	private static void test(RpcClientChannel channel, int i) throws Exception {
 
 		Stub calcService = CalcService.newStub(channel);
 
@@ -142,7 +141,7 @@ public class CalculatorClient {
 		}
 
 		// Close the channel
-		channel.close();
+		// channel.close();
 		System.out.println("Done! index=" + i);
 	}
 

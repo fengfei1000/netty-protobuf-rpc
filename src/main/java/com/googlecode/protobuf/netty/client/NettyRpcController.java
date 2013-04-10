@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.googlecode.protobuf.netty;
+package com.googlecode.protobuf.netty.client;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;

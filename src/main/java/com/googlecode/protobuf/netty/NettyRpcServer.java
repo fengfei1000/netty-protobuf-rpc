@@ -22,10 +22,10 @@
 package com.googlecode.protobuf.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -44,7 +44,8 @@ public class NettyRpcServer {
 	private EventLoopGroup parentGroup;
 	private EventLoopGroup childGroup;
 	private final ServerBootstrap bootstrap;
-	private final ChannelGroup allChannels = new DefaultChannelGroup();
+	private final ChannelGroup allChannels = new DefaultChannelGroup(
+			"protobuf-servers");
 	private final NettyRpcServerChannelUpstreamHandler handler = new NettyRpcServerChannelUpstreamHandler(
 			allChannels);
 
@@ -98,9 +99,13 @@ public class NettyRpcServer {
 	}
 
 	public void shutdown() {
-		allChannels.close().awaitUninterruptibly();
+
+		try {
+			ChannelGroupFuture future = allChannels.close();
+			future.sync();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		bootstrap.shutdown();// releaseExternalResources();
-		this.childGroup.shutdown();
-		this.parentGroup.shutdown();
 	}
 }
